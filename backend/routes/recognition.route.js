@@ -1,8 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import { ClarifaiStub, grpc} from "clarifai-nodejs-grpc";
-// ! only for testing api
-import fs from "fs";
 
 dotenv.config();
 
@@ -10,16 +8,13 @@ const router = express.Router();
 
 const PAT = process.env.CLARIFAI_PAT;
 
-// Specify the correct user_id/app_id pairings
-// Since you're making inferences outside your app's scope
 const USER_ID = 'clarifai';
 const APP_ID = 'main';
-// Change these to whatever model and image URL you want to use
 const MODEL_ID = 'general-image-detection';
 const MODEL_VERSION_ID = '1580bb1932594c93b7e2e04456af7c6f';
 // ! for testing only
 // const IMAGE_URL = 'https://samples.clarifai.com/metro-north.jpg';
-// const base64Image = fs.readFileSync('metro-north.jpg', { encoding: 'base64' });
+
 
 const stub = ClarifaiStub.grpc();
 
