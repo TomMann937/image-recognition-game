@@ -8,6 +8,9 @@ const router = express.Router();
 
 const PAT = process.env.CLARIFAI_PAT;
 
+// Model info
+// https://clarifai.com/clarifai/main/models/general-image-detection?tab=overview
+
 const USER_ID = 'clarifai';
 const APP_ID = 'main';
 const MODEL_ID = 'general-image-detection';
