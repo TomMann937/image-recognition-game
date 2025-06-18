@@ -86,14 +86,14 @@ router.post("/", async (req, res) => {
                   const value = concept.value.toFixed(4);
   
                   // console.log(`${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`);
-                  console.log(`${name}: ${value}`)
+                //   console.log(`${name}: ${value}`)
                   detected.push(name);
                   
               });
           });
 
       
-        console.log(detected);
+        // console.log(detected);
         res.status(200).json({ success: true, data: detected});
         
       }
