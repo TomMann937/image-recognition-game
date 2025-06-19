@@ -1,14 +1,23 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Dialog, Button, Text, Field, Input } from "@chakra-ui/react";
 import { Toaster, toaster } from "@/components/ui/toaster";
+import { useLeaderboardStore } from "../store/leaderboard";
+import { useNavigate } from "react-router-dom";
+
 
 const ChallengePage = () => {
+  const { createLeaderboardEntry } = useLeaderboardStore();
+  const navigate = useNavigate();
+
   const videoRef = useRef(null);
   const photoRef = useRef(null);
 
   const [hasPhoto, setHasPhoto] = useState(false);
   const [item, setItem] = useState("");
   const [score, setScore] = useState(0);
+  const [time, setTime] = useState(1 * 60 * 1000);
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("")
 
   const getVideo = () => {
     navigator.mediaDevices
@@ -81,7 +90,7 @@ const ChallengePage = () => {
       getItem();
       toaster.create({
         descirption: "Item found",
-        titl: "Item found",
+        title: "Item found",
         type: "success",
         closable: true
       })
@@ -96,10 +105,43 @@ const ChallengePage = () => {
     setHasPhoto(false);
   };
 
+  const getFormattedTime = (milliseconds) => {
+    if (milliseconds <= 0 ) return "0:00"
+
+    let total_seconds = parseInt(Math.floor(milliseconds / 1000));
+    let minutes = parseInt(Math.floor(total_seconds / 60));
+
+    let seconds = parseInt(total_seconds % 60);
+
+    let formatted_seconds = (seconds <= 9 ? '0' + seconds : seconds);
+
+    return `${minutes}:${formatted_seconds}`
+  }
+
+  const handleSubmitScore = async () => {
+    const leaderboardEntry = {name: name, score: score};
+    
+    const { success, message } = await createLeaderboardEntry(leaderboardEntry);
+
+    navigate("/");
+  }
+
+
   useEffect(() => {
     getVideo();
     getItem();
   }, []);
+
+  useEffect(() => {
+    if (time <= 0) {
+      setOpen(true)
+    }
+    else {
+      setTimeout(() => {
+        setTime(time - 1000);
+      }, 1000)
+    }
+  }, [time])
 
   return (
     <div className="relative">
@@ -110,7 +152,7 @@ const ChallengePage = () => {
         fontFamily={"sans-serif"}
         fontWeight={"semibold"}
         >
-          Time:</Text>
+          Time: {getFormattedTime(time)}</Text>
 
         <Text className=" bg-gray-800 bg-opacity-25 rounded-2xl " 
         px={5}
@@ -151,6 +193,36 @@ const ChallengePage = () => {
         </div>
       )}
       <Toaster />
+
+      <Dialog.Root lazyMount open={open} onOpenChange={(e) => setOpen(e.open)}>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.CloseTrigger />
+            <Dialog.Header>
+              <Dialog.Title>Submit Score</Dialog.Title>
+            </Dialog.Header>
+            <Dialog.Body> 
+              <Text
+              pb={4}
+              fontWeight={"semibold"}
+              fontSize={"xl"}
+              >Final Score: {score}</Text>
+              <Field.Root>
+                <Field.Label>Name</Field.Label>
+                <Input 
+                placeholder="name"
+                name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}/>
+              </Field.Root>
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Button onClick={handleSubmitScore}>Submit</Button>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
     </div>
 
   );

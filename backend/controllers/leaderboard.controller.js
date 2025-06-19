@@ -6,6 +6,8 @@ export const getEntries = async (req, res) => {
 
   try {
     const entries = await LeaderboardEntry.find();
+    entries.sort((a, b) => {return b.score - a.score});
+
     res.status(200).json({ success: true, entries: entries})
   } catch (error) {
     console.log("Could not fetch products")
